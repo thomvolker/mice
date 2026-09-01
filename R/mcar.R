@@ -104,6 +104,7 @@
 #' md.pattern(nhanes)
 #' @export
 #' @importFrom stats cov pchisq spline
+#' @importFrom utils capture.output
 #' @md
 mcar <- function(
   x,
@@ -194,7 +195,7 @@ mcar.data.frame <- function(
   }
   newdata <- x
   missings <- is.na(x)
-  pats <- mice::md.pattern(x, plot = FALSE)
+  utils::capture.output({pats <- mice::md.pattern(x, plot = FALSE)})
   if (nrow(pats) < 4L) {
     stop("Two or more missing data patterns are required.")
   }
@@ -224,7 +225,7 @@ mcar.data.frame <- function(
       drop = FALSE
     )
     missings <- is.na(newdata)
-    pats <- mice::md.pattern(newdata, plot = FALSE)
+    utils::capture.output({pats <- mice::md.pattern(newdata, plot = FALSE)})
   }
   class(pats) <- c("md.pattern", class(pats))
   out$md.pattern <- pats
