@@ -147,7 +147,7 @@ mcar.data.frame <- function(
       alpha = alpha,
       method = method,
       md.pattern = NULL,
-      removed_rows = NULL,
+      removed_rows = rep(FALSE, nrow(x)),
       removed_patterns = NULL
     )
   if (inherits(imputed, "mids")) {
@@ -198,12 +198,14 @@ mcar.data.frame <- function(
   if (nrow(pats) < 4L) {
     stop("Two or more missing data patterns are required.")
   }
+  
   remove_pats <- as.numeric(rownames(pats))[-nrow(pats)] <= min_n
+  pats <- pats[-nrow(pats), colnames(missings)]
+  idmiss <- do.call(paste, as.data.frame(missings))
+  idpats <- do.call(paste, as.data.frame(pats == 0))
+  
   if (any(remove_pats)) {
     out$removed_patterns <- pats[which(remove_pats), ]
-    pats <- pats[-nrow(pats), colnames(missings)]
-    idmiss <- do.call(paste, as.data.frame(missings))
-    idpats <- do.call(paste, as.data.frame(pats == 0))
     remove_these <- idmiss %in% idpats[remove_pats]
     if (all(remove_these)) {
       stop(
